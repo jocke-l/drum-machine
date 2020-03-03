@@ -3,8 +3,7 @@ from collections import defaultdict
 
 
 class Timeline:
-    def __init__(self, bpm):
-        self.bpm = bpm
+    def __init__(self):
         self._timeline = defaultdict(list)
 
     def __getitem__(self, item):
@@ -16,13 +15,17 @@ class Timeline:
                 )
 
             start, stop = item.start or 0, item.stop
-            iterator = itertools.count() if stop is None else range(start, stop)
+            iterator = (
+                itertools.count()
+                if stop is None
+                else range(stop - start)
+           )
             return (self._timeline[start + delta] for delta in iterator)
         else:
             return self._timeline[item]
 
     def __iter__(self):
-        yield self[:]
+        return self[:]
 
     def add_sample(self, beat, sample):
         self._timeline[beat] += [sample]
